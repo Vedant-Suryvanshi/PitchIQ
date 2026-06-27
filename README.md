@@ -152,5 +152,5 @@ Built for the **Kaggle Agents Intensive Capstone** using:
 
 ## Team Members
 
-**Vedant Suryvanshi**
-**Vaishnavi Suryvanshi**
+-**Vedant Suryvanshi**
+-**Vaishnavi Suryvanshi**
