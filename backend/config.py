@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # ── Database ──────────────────────────────────────────────────────────────
     # PostgreSQL connection string
     database_url: str = Field(
-        default="postgresql+asyncpg://pitchiq:pitchiq_secure_password_2024@localhost:5432/pitchiq",
+        default="postgresql+asyncpg://user:password@host:port/database",
         description="PostgreSQL async URL"
     )
 
@@ -78,7 +78,7 @@ class Settings(BaseSettings):
         
         # If it's empty or invalid, use default
         if not v or v == "":
-            return "postgresql+asyncpg://pitchiq:pitchiq_secure_password_2024@localhost:5432/pitchiq"
+            return "postgresql+asyncpg://user:password@host:port/database"
         
         return v
 
