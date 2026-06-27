@@ -1,0 +1,45 @@
+# backend/requirements.txt
+
+# ── Web Framework ─────────────────────────────────────────────────────────────
+fastapi         # Modern async Python web framework
+uvicorn[standard] # ASGI server (runs FastAPI)
+python-multipart==0.0.9   # Required for FastAPI form parsing
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy==2.0.30        # ORM for SQLite (and easy migration to Postgres)
+aiosqlite==0.20.0         # Async SQLite driver
+asyncpg==0.29.0              # PostgreSQL async driver
+alembic==1.12.1
+psycopg2-binary==2.9.9
+aiosqlite==0.20.0  # Keep for testing
+
+# ── Data Validation ───────────────────────────────────────────────────────────
+pydantic           # Type-safe data models (used everywhere)
+pydantic-settings  # Loads .env into typed Settings class
+
+# ── Google AI / ADK ───────────────────────────────────────────────────────────
+google-generativeai==0.7.2        # Gemini API client
+google-adk               # Google Agent Development Kit
+
+# ── MCP ───────────────────────────────────────────────────────────────────────
+mcp                # Model Context Protocol SDK
+
+# ── HTTP Client ───────────────────────────────────────────────────────────────
+httpx==0.27.0             # Async HTTP client (used by agents for web search)
+requests==2.31.0
+
+# ── Security ──────────────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0  # JWT tokens
+passlib[bcrypt]==1.7.4            # Password hashing (future auth)
+slowapi==0.1.9                    # Rate limiting middleware for FastAPI
+
+# ── PDF Generation ────────────────────────────────────────────────────────────
+weasyprint==62.1          # Convert HTML/markdown memo to PDF
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+python-dotenv==1.0.1      # Load .env files
+markdown==3.6             # Render markdown memo to HTML (for PDF)
+structlog==24.2.0         # Structured logging (never logs secrets)
+tenacity==8.3.0           # Retry logic for API calls
+uuid==1.30                # Job ID generation
+click==8.1.7

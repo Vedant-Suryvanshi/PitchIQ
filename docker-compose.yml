@@ -1,0 +1,118 @@
+# PitchIQ/docker-compose.yml
+# Updated with PostgreSQL, Redis, and improved configuration
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pitchiq-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pitchiq}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pitchiq_secure_password_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-pitchiq}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - pitchiq-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pitchiq} -d ${POSTGRES_DB:-pitchiq}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=128MB
+      -c effective_cache_size=512MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: pitchiq-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - pitchiq-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pitchiq-backend
+    environment:
+      - ENVIRONMENT=development
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-pitchiq}:${POSTGRES_PASSWORD:-pitchiq_secure_password_2024}@postgres:5432/${POSTGRES_DB:-pitchiq}
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_me}
+      - ALLOWED_ORIGINS=http://localhost:3000
+      - RATE_LIMIT_PER_MINUTE=10
+      - LOG_LEVEL=INFO
+      - DB_POOL_SIZE=10
+      - DB_MAX_OVERFLOW=20
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pitchiq-network
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Frontend Next.js Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pitchiq-frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - pitchiq-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  pitchiq-network:
+    driver: bridge

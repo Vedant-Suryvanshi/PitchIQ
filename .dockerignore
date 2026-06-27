@@ -1,0 +1,107 @@
+# PitchIQ/.dockerignore
+# Files to exclude from Docker builds - keeps images small and secure
+
+# Environment files (never copy to Docker image)
+.env
+.env.*
+!.env.example
+
+# Version control
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+*.egg
+
+# Node modules
+node_modules/
+.npm
+.next/
+out/
+
+# Build outputs
+dist/
+build/
+*.log
+logs/
+*.pid
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Test files
+tests/
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Security files (NEVER copy)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.csr
+
+# Database files (we use volume for persistence)
+*.db
+*.sqlite
+*.sqlite3
+
+# Documentation
+docs/
+*.md
+!README.md  # Include README if it exists
+
+# CI/CD
+.gitlab-ci.yml
+azure-pipelines.yml
+.travis.yml
+
+# Monitoring data
+prometheus_data/
+grafana_data/
+
+# Frontend specific
+.next/
+out/
+.vercel/
+.npm
+yarn-error.log
+
+# Backend specific
+logs/
+static/
+*.pid
+
+# OS files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
