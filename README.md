@@ -120,14 +120,6 @@ Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 | `GET /api/mcp/tools` | List available MCP tools |
 | `GET /health` | System health check |
 
----
-
-## 🧪 Testing
-
-```bash
-cd backend
-pytest tests/ -v
-```
 
 ---
 
